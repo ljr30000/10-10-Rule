@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10/10 Rule Bathroom Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function getCurrentPeriod() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const currentTime = hours * 60 + minutes; // Convert to minutes since midnight
+
+            const schedule = [
+                { period: "1st Period", start: 7 * 60 + 15, end: 8 * 60 + 1 },
+                { period: "2nd Period", start: 8 * 60 + 7, end: 8 * 60 + 53 },
+                { period: "3rd Period", start: 8 * 60 + 59, end: 9 * 60 + 46 },
+                { period: "Oiler Time", start: 9 * 60 + 52, end: 10 * 60 + 17 }, // 10/10 rule applies
+                { period: "4th Period", start: 10 * 60 + 23, end: 11 * 60 + 9 },
+                { period: "5th Period", start: 11 * 60 + 15, end: 12 * 60 + 47 },
+                { period: "6th Period", start: 12 * 60 + 53, end: 13 * 60 + 40 },
+                { period: "7th Period", start: 13 * 60 + 46, end: 14 * 60 + 35 }
+            ];
+
+            for (let i = 0; i < schedule.length; i++) {
+                if (currentTime >= schedule[i].start && currentTime <= schedule[i].end) {
+                    return schedule[i];
+                }
+            }
+            return null; // No class in session
+        }
+
+        function updatePermission() {
+            const period = getCurrentPeriod();
+            if (!period) {
+                document.getElementById("result").innerText = "✅ Not in class. You can go!";
+                document.getElementById("result").style.color = "green";
+                return;
+            }
+
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const timeSinceStart = currentMinutes - period.start;
+            const timeUntilEnd = period.end - currentMinutes;
+
+            if (timeSinceStart < 10 || timeUntilEnd <= 10) {
+                document.getElementById("result").innerText = `🚫 Not Allowed! 10/10 Rule in Effect during ${period.period}.`;
+                document.getElementById("result").style.color = "red";
+            } else {
+                document.getElementById("result").innerText = `✅ Allowed! You can go during ${period.period}.`;
+                document.getElementById("result").style.color = "green";
+            }
+        }
+
+        setInterval(updatePermission, 1000); // Update every second
+        window.onload = updatePermission; // Update on page load
+    </script>
+</head>
+<body>
+    <h1>10/10 Rule Bathroom Checker</h1>
+    <p id="result"></p>
+</body>
+</html>
